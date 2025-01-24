@@ -1,9 +1,9 @@
 import os
-import google.generativeai as genai
 
-from rest_framework import viewsets, status
 from dotenv import load_dotenv
+from rest_framework import viewsets, status
 
+import google.generativeai as genai
 from Auth.utils import JWTAuthentication
 from Chatbot.models import Chatbot
 from Chatbot.serializer import ChatbotSerializer

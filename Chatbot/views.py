@@ -1,23 +1,24 @@
 import os
+import google.generativeai as genai
+
 from rest_framework import viewsets, status
+from dotenv import load_dotenv
+
+from Auth.utils import JWTAuthentication
+from Chatbot.models import Chatbot
+from Chatbot.serializer import ChatbotSerializer
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from Chatbot.serializer import ChatbotSerializer
-from Chatbot.models import Chatbot
-from Auth.utils import JWTAuthentication
-from rest_framework.decorators import action
 
-from dotenv import load_dotenv
-import google.generativeai as genai
 
 load_dotenv()
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 if not GEMINI_API_KEY:
-    raise ValueError("Gemini API key is missing. Please set it in the .env file.")
+    raise ValueError("Gemini API key is missing. Please set it.")
 
 genai.configure(api_key=GEMINI_API_KEY)
-
 
 class ChatbotViewSet(viewsets.ViewSet):
     serializer_class = ChatbotSerializer
@@ -92,11 +93,11 @@ class ChatbotViewSet(viewsets.ViewSet):
             )
         
         prompt = f"""
-        You are an AI assistant with the following behavior: {chatbot.behavior}
+        You are an AI assistant with behavior: {chatbot.behavior}
         
         User Query: {query}
         
-        Provide a response that aligns with the specified behavior.
+        Provide a response that aligns with the chatbot behavior.
         """
         
         try:
@@ -112,7 +113,3 @@ class ChatbotViewSet(viewsets.ViewSet):
             return Response({
                 'error': f'Error generating response: {str(e)}'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-
-
-
